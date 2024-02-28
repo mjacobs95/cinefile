@@ -29,7 +29,17 @@ class NetworkBuilder(DataLoader):
                  string_1 = "dumb and dumber",
                  actor_lim = 5, # higher this is, the more B-listers
                  movie_lim = 10, # higher this is, fewer iterations required I imagine
-                 iter_lim = 5):
+                 iter_lim = 4):
+        """Initialises the object.
+
+        Args:
+            mode (str, optional): The node type of the first two entities. Defaults to "movie".
+            string_0 (str, optional): Entity name 1. Defaults to "jaws".
+            string_1 (str, optional): Entity name 2. Defaults to "dumb and dumber".
+            actor_lim (int, optional): API limit on n actors returned per movie. Defaults to 5.
+            movie_lim (int, optional): API limit on n movies returned per actor Defaults to 10.
+            iter_lim (int, optional): Limit on the number of iterations to run for before breaking. Defaults to 4. 
+        """
 
         super().__init__(actor_lim = actor_lim, movie_lim = movie_lim)
         self.iter_lim = iter_lim
@@ -60,6 +70,11 @@ class NetworkBuilder(DataLoader):
     
 
     def generate_node_id(self):
+        """Generates unique ID for a new node.
+
+        Returns:
+            int: New node ID.
+        """
 
         node_list = list(self.G.nodes)
 
@@ -73,6 +88,16 @@ class NetworkBuilder(DataLoader):
     
 
     def add_node(self, subdict, node_type = 'movie', base_node = False):
+        """Adds new node to graph. 
+
+        Args:
+            subdict (dict): Entity data from API. 
+            node_type (str, optional): Node type. Defaults to 'movie'.
+            base_node (bool, optional): Whether the node is one of the first two placed. Defaults to False.
+
+        Returns:
+            int: New node ID.
+        """
 
         if base_node:
             color = self.base_node_color
@@ -97,6 +122,8 @@ class NetworkBuilder(DataLoader):
     
 
     def update_unexpanded_ids(self):
+        """Updates a list of unexpanded nodes.
+        """
 
         nodes = self.G.nodes.data()
         self.nodes_unexpanded = [node for node in nodes if node[1]['expanded'] == False]
@@ -105,6 +132,11 @@ class NetworkBuilder(DataLoader):
     
 
     def expand_node(self, node_tuple):
+        """Adds new nodes for entities associated with an unexpanded node. Draws edges to the new nodes. 
+
+        Args:
+            node_tuple (tuple): Tuple containing node ID and TMDB ID. 
+        """
 
         node_id = node_tuple[0]
         api_id = node_tuple[1].get('id')
@@ -126,11 +158,15 @@ class NetworkBuilder(DataLoader):
             new_id = self.add_node(subdict, node_type = new_node_type)
             self.G.add_edge(node_id, new_id, **{'label':character, 'font':{'size':self.edge_font_size}, 'color':self.egde_color})
 
-
         return
     
 
     def get_duplicated_nodes(self):
+        """Gets sets of duplicated nodes. 
+
+        Returns:
+            dict: Dictionary of duplicated node IDs, indexed by TMBD ID. 
+        """
 
         dup_dict = {}
 
@@ -146,6 +182,11 @@ class NetworkBuilder(DataLoader):
 
 
     def expand_all(self, resolve = True):
+        """Expands all unexpanded nodes using self.expand_node(). 
+
+        Args:
+            resolve (bool, optional): Whether to resolve duplicate nodes. Defaults to True.
+        """
 
         nodes_unexpanded = self.nodes_unexpanded
 
@@ -173,6 +214,8 @@ class NetworkBuilder(DataLoader):
     
 
     def resolve_nodes(self):
+        """Resolve all sets of duplicated nodes. 
+        """
 
         dup_dict = self.get_duplicated_nodes()
 
@@ -190,6 +233,11 @@ class NetworkBuilder(DataLoader):
     
 
     def merge_node_group(self, node_id_list):
+        """Merge a set of duplicate nodes by deleting nodes and editing edges. 
+
+        Args:
+            node_id_list (list): List of node IDs that we want to merge. 
+        """
 
         keep_node = node_id_list[0]
         remove_list = node_id_list[1:]
@@ -215,6 +263,11 @@ class NetworkBuilder(DataLoader):
     
 
     def check_if_connected(self):
+        """Checks if the two base nodes are connected.
+
+        Returns:
+            int: Whether the graph is connected. Can only take the values 0 or 1. 
+        """
 
         self.connected = nx.node_connectivity(self.G, s=self.base_node_0, t=self.base_node_1)
 
@@ -225,6 +278,11 @@ class NetworkBuilder(DataLoader):
 
 
     def main(self, iter_lim = None):
+        """Iteratively invokes self.expand_all() and self.check_if_connected() until graph is connected or iter_lim reached. 
+
+        Args:
+            iter_lim (int, optional): Limit on the number of iterations to run for before breaking. Defaults to None.
+        """
 
         iter_lim = self.iter_lim if iter_lim == None else iter_lim
 
@@ -243,6 +301,11 @@ class NetworkBuilder(DataLoader):
     
 
     def get_shortest_paths(self):
+        """Gets all shortest paths between base nodes if they are connected. 
+
+        Returns:
+            list: List of shortest paths. 
+        """
 
         if self.connected:
             p = nx.all_shortest_paths(self.G, source = self.base_node_0, target = self.base_node_1)
@@ -255,6 +318,11 @@ class NetworkBuilder(DataLoader):
     
 
     def streamline_from_path(self):
+        """Induces subgraph of the shortest paths between base nodes. 
+
+        Returns:
+            networkx.graph.Graph: Induced subgraph.
+        """
 
         p = self.get_shortest_paths()
         nodes_sub = set([item for sublist in p for item in sublist])
@@ -264,6 +332,13 @@ class NetworkBuilder(DataLoader):
 
 
     def plot(self, size = '1000px', streamline = True, filename = None):
+        """Plots graph as .html file. 
+
+        Args:
+            size (str, optional): Image size. Defaults to '1000px'.
+            streamline (bool, optional): Whether to streamline graph to shortest path. Defaults to True.
+            filename (str, optional): Desired .html filename. Defaults to None.
+        """
 
         nt = Network(size, size)
 
