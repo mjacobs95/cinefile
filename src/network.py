@@ -222,16 +222,6 @@ class NetworkBuilder(DataLoader):
             print("Graph is connected!")
 
         return self.connected
-    
-
-    def build_network(self, iter_lim = 2):
-
-        for iter in range(iter_lim):
-
-            print(iter)
-            self.expand_all()
-
-        return
 
 
     def main(self, iter_lim = None):
@@ -242,7 +232,7 @@ class NetworkBuilder(DataLoader):
 
             print("On iteration: {}".format(iter + 1))
 
-            self.expand_all()
+            self.expand_all(resolve = True)
             connected = self.check_if_connected()
 
             if connected == 1:
@@ -273,7 +263,7 @@ class NetworkBuilder(DataLoader):
         return G_sub
 
 
-    def plot(self, size = '1000px', streamline = True):
+    def plot(self, size = '1000px', streamline = True, filename = None):
 
         nt = Network(size, size)
 
@@ -284,7 +274,9 @@ class NetworkBuilder(DataLoader):
         
         nt.from_nx(G)
 
-        filename = "{}_{}.html".format(self.string_0, self.string_1)
+        if filename == None:
+            filename = "{}_{}.html".format(self.string_0, self.string_1)
+
         filepath = str(out_dir / filename)
         nt.show(filepath, notebook=False)
 
@@ -296,15 +288,15 @@ class NetworkBuilder(DataLoader):
 
 if __name__ == '__main__':
 
-    a = NetworkBuilder(mode = "actor",
-                       string_0 = "kurt russell",
-                       string_1 = "richard harris",
-                       actor_lim = 10, 
-                       movie_lim = 20)
+    a = NetworkBuilder(mode = "movie",
+                       string_0 = "star wars",
+                       string_1 = "monsters inc",
+                       actor_lim = 5, 
+                       movie_lim = 10)
 
-    a.main(iter_lim = 3)
+    a.main(iter_lim = 4)
 
-    a.plot(streamline = True)
+    a.plot(streamline = True, filename = "demo.html")
 
     
     
