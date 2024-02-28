@@ -1,3 +1,4 @@
+import logging
 import networkx as nx
 
 from pathlib import Path
@@ -8,6 +9,9 @@ from pyvis.network import Network
 
 root_dir = Path(__file__).resolve().parent.parent
 out_dir = root_dir / 'outputs'
+
+log_fmt = '%(asctime)s : %(message)s'
+logging.basicConfig(format=log_fmt, level = logging.INFO)
 
 
 class NetworkBuilder(DataLoader):
@@ -22,6 +26,8 @@ class NetworkBuilder(DataLoader):
     movie_node_color = 'red'
     actor_node_color = 'blue'
     node_font_size = 10
+
+    log = logging.getLogger(__name__)
 
     def __init__(self, 
                  mode = "movie",
@@ -115,7 +121,7 @@ class NetworkBuilder(DataLoader):
         elif 'name' in subdict.keys():
             attribute_dict['label'] = subdict.get('name')
 
-        print("\t\tAdding node {}: {}".format(new_id, attribute_dict['label']))
+        self.log.info("\t\tAdding node {}: {}".format(new_id, attribute_dict['label']))
         self.G.add_nodes_from([(new_id, attribute_dict)])
 
         return new_id
@@ -197,7 +203,7 @@ class NetworkBuilder(DataLoader):
                 if self.check_if_connected() == 1:
                     break
 
-            print("\tExpanding node {}: {}".format(node_tuple[0], node_tuple[1].get("label")))
+            self.log.info("\tExpanding node {}: {}".format(node_tuple[0], node_tuple[1].get("label")))
             self.expand_node(node_tuple)
 
         # set expanded to True for previously unexpanded nodes
@@ -272,7 +278,7 @@ class NetworkBuilder(DataLoader):
         self.connected = nx.node_connectivity(self.G, s=self.base_node_0, t=self.base_node_1)
 
         if self.connected == 1:
-            print("Graph is connected!")
+            self.log.info("Graph is connected!")
 
         return self.connected
 
@@ -288,7 +294,7 @@ class NetworkBuilder(DataLoader):
 
         for iter in range(iter_lim):
 
-            print("On iteration: {}".format(iter + 1))
+            self.log.info("On iteration: {}".format(iter + 1))
 
             self.expand_all(resolve = True)
             connected = self.check_if_connected()
@@ -311,7 +317,7 @@ class NetworkBuilder(DataLoader):
             p = nx.all_shortest_paths(self.G, source = self.base_node_0, target = self.base_node_1)
 
         else:
-            print("Graph is not connected!")
+            self.log.info("Graph is not connected!")
             p = []
 
         return p 
@@ -363,11 +369,11 @@ class NetworkBuilder(DataLoader):
 
 if __name__ == '__main__':
 
-    a = NetworkBuilder(mode = "movie",
-                       string_0 = "star wars",
-                       string_1 = "monsters inc",
-                       actor_lim = 5, 
-                       movie_lim = 10)
+    a = NetworkBuilder(mode = "actor",
+                       string_0 = "brad pitt",
+                       string_1 = "patrick stewart",
+                       actor_lim = 3, 
+                       movie_lim = 3)
 
     a.main(iter_lim = 4)
 
