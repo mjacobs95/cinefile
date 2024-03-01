@@ -27,4 +27,8 @@ The algorithm needs to resolve these two nodes to connect the graph:
 
 If the graph is not connected after resolving all the nodes and `iter_lim` has not been reached, it will again expand all the unexpanded nodes. 
 
+### Getting in contact
+
+Contact [Matthew Jacobs](jacobs.matt@aol.co.uk) to get involved. 
+
 
