@@ -1,4 +1,5 @@
 venv/**
 outputs/**
+!outputs/.gitkeep
 lib/**
 .DS_Store
