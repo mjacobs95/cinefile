@@ -29,6 +29,6 @@ If the graph is not connected after resolving all the nodes and `iter_lim` has n
 
 ### Getting in contact
 
-Contact [Matthew Jacobs](jacobs.matt@aol.co.uk) to get involved. 
+Contact Matthew Jacobs at jacobs.matt@aol.co.uk to get involved. 
 
 
