@@ -15,6 +15,14 @@ This project automatically links two movies or two actors via the shortest path 
 
 ### Algorithm
 
-The algorithm in `NetworkBuilder` works by iteratively expanding the network from the two starting nodes. This continues until the graph is connected or `iter_lim` is reached.
+<img src="/images/algo.png" alt="Network building algorithm" width="100"/>
 
-![Network building algorithm](/images/algo.png)
+The algorithm in `NetworkBuilder` works by iteratively expanding the network from the two starting nodes. Below is a partially expanded graph with two nodes representing the actor Richard Dreyfuss. 
+
+<img src="/images/1.png" alt="Unresolved Richard Dreyfuss" width="100"/>
+
+The algorithm needs to resolve these two nodes to connect the graph.
+
+<img src="/images/2.png" alt="Resolved Richard Dreyfuss" width="100"/>
+
+
