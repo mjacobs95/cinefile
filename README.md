@@ -17,4 +17,4 @@ This project automatically links two movies or two actors via the shortest path 
 
 The algorithm in `NetworkBuilder` works by iteratively expanding the network from the two starting nodes. This continues until the graph is connected or `iter_lim` is reached.
 
-![Network building algorithm](/images/algo)
+![Network building algorithm](/images/algo.png)
