@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 
 from pathlib import Path
-from api import DataLoader
+from src.api import DataLoader
 from collections import Counter
 from pyvis.network import Network
 
@@ -369,9 +369,9 @@ class NetworkBuilder(DataLoader):
 
 if __name__ == '__main__':
 
-    a = NetworkBuilder(mode = "movie",
-                       string_0 = "star wars",
-                       string_1 = "monsters inc",
+    a = NetworkBuilder(mode = "actor",
+                       string_0 = "brad pitt",
+                       string_1 = "patrick stewart",
                        actor_lim = 5, 
                        movie_lim = 5)
 
