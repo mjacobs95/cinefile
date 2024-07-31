@@ -58,6 +58,7 @@ class NetworkApp(DataLoader):
         """
         
         self.connected = False
+        self.state = "not connected"
         self.base_nodes = []
 
         super().__init__(actor_lim = actor_lim, movie_lim = movie_lim)
@@ -103,7 +104,8 @@ class NetworkApp(DataLoader):
                                  value=actor_lim)
             ], style={'display': 'inline-block'}),
             html.Br(),
-            html.Div(id='connected_bool'),
+            html.Div(self.state, id='connected_bool'), # put default value of not connected in here?
+        
 
             cyto.Cytoscape(
                 id='cytoscape-elements-callbacks',
@@ -122,9 +124,10 @@ class NetworkApp(DataLoader):
             State('mode', 'value'),
             prevent_initial_call=True)(self.add_base_node)
         
-        # expand nodes
+        # expand nodes - have this update a 'connected' state everytime it is run
         self.app.callback(
             Output('cytoscape-elements-callbacks', 'elements', allow_duplicate=True),
+            Output('connected_bool', 'children', allow_duplicate=True),
             State('movie_lim', 'value'),
             State('actor_lim', 'value'),
             Input('btn_expand', 'n_clicks'),
@@ -139,11 +142,13 @@ class NetworkApp(DataLoader):
         # reset
         self.app.callback(
             Output('cytoscape-elements-callbacks', 'elements', allow_duplicate=True),
+            Output('connected_bool', 'children', allow_duplicate=True),
             Input('btn_reset', 'n_clicks'),
             prevent_initial_call=True)(self.reset)
-        
+
         
         return
+
         
     
     def reset(self, btn_reset):
@@ -153,7 +158,7 @@ class NetworkApp(DataLoader):
 
         print("resetting")
 
-        return []+[]
+        return []+[], self.state
 
 
     def add_base_node(self, n_clicks, name_string, mode):
@@ -369,8 +374,9 @@ class NetworkApp(DataLoader):
         self.check_if_connected()
 
         elements = self.graph_to_elements()
+        state = self.state
         
-        return elements
+        return elements, state
     
 
     def check_if_connected(self):
@@ -388,6 +394,7 @@ class NetworkApp(DataLoader):
         #self.connected = nx.node_connectivity(self.G, s=self.base_nodes[0], t=self.base_nodes[1])
 
         if self.connected:
+            self.state = 'connected'
             print("Graph is connected!")
 
         return self.connected
@@ -420,8 +427,11 @@ class NetworkApp(DataLoader):
 
         return
     
-    def get_shortest_paths(self):
+    def get_shortest_paths(self, n = 4):
         """Gets all shortest paths between base nodes if they are connected. 
+
+        Args:
+            n (int, optional): Max number of shortest paths to show. Defaults to 5.
 
         Returns:
             list: List of shortest paths. 
@@ -439,6 +449,9 @@ class NetworkApp(DataLoader):
             return
 
         paths = [item for sublist in p for item in sublist]
+
+        if len(paths) > n:
+            paths = paths[:n] # do this selection at random in future
 
         return paths
     
