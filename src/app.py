@@ -50,6 +50,12 @@ class NetworkApp(DataLoader):
     def __init__(self, 
                  actor_lim = 3, 
                  movie_lim = 3):
+        """Initialises the app.
+
+        Args:
+            actor_lim (int, optional): API limit on n actors returned per movie. Defaults to 3.
+            movie_lim (int, optional): API limit on n movies returned per actor Defaults to 3.
+        """
         
         self.connected = False
         self.base_nodes = []
@@ -151,6 +157,15 @@ class NetworkApp(DataLoader):
 
 
     def add_base_node(self, n_clicks, name_string, mode):
+        """Adds base node to graph. 
+
+        Args:
+            name_string (str): Entity name. 
+            mode (str): Node type. 
+
+        Returns:
+            int: New node ID.
+        """
 
         if mode == "movie":
 
